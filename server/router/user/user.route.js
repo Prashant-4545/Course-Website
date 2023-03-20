@@ -54,6 +54,55 @@ router.post('/login',(req, res)=>{
                 }
             })
     }
+});
+
+let purchasedCourse = [{coursename, courseid, coursetype, courseprice, coursecontent}] 
+
+router.get('/courses', (req, res)=>{
+    connection.query(`select * from courses`, (err, result)=>{
+        if(err){
+            res.send(err)
+        }else{
+            res.send({message: 'Courses', result: result})
+        }
+    })
+});
+
+router.get('/course/:id', (req, res)=>{
+    const {courseType} = req.params.id;
+    if(req.params){
+        connection.query(`select * from courses where courseType = ?`, [courseType],
+        (err, result)=>{
+            if(err){
+                res.send(err);
+            }else{
+                res.send({message: 'Course with course name'+ courseType, result: result});
+            }
+        })
+    }
+});
+
+router.post('/purchase-course/:id', (req,res)=>{
+    const courseId = req.params.id;
+    if(req.params){
+        connection.query(`select * from courses where courseId = ?`, [courseId]
+        , (err, result)=>{
+            if(err){
+                res.send(err);
+            }
+            else{
+                try{
+                    purchasedCourse.push(result)
+                    res.send({message: 'course '+result[0].coursename+' purchased!!', result: result[0]});
+                }
+                catch{
+                    res.send(err);
+                    console.log(err);
+                }
+
+            }
+        })
+    }
 })
 
 module.exports = router;
